@@ -77,3 +77,29 @@ Naively would be: pick each combination of two images (n^2). Calculate their dif
 ### Dictionary Learning
 
 Lecture 12, bottom.
+
+## After dictlearn
+
+So take a 256 x 256 image
+it gets broken down into 256 16x16 blocks. Each of those blocks is then encoded using the 64-element dictionary. So there's a total of 16384 dimensions. Naively there would be 4 times as many dimensions.
+
+Could maybe get it down to 16 dimensions per block, which would amount to a 16x dimensionality reduction, leaving 256 x 16 dimensions.
+
+We could then go one step further and use an auto-encoder to try and do further dimensionality reduction down to three dimensions. After training this, we would have a simple, smaller neural network. To do that embedding.
+
+The spaces (dimensions):
+
+- Full space (the full image, say 256 x 256 dimensions)
+- Block space (once we embed into blocks, say 256 x 16 dimensions)
+- Trajectory space (further reduced from block space, say 3 dimensions) [NOTE: Can play around with this. 3 dimensions will be good for visualization (as a potential task of interest), and trajectory analysis, but could also try trajectory analysis on higher dimensional stuff]
+
+SO it's:
+
+- Get P-frame
+- Use the macroblock differences to compute the embedding in block space based on the already embedded i-frame
+- Use the auto-encoder to compute the embedding in trajectory space.
+
+### Gah fuck it doesn't work for another reason
+
+https://www.kaggle.com/code/datastrophy/vgg16-pytorch-implementation
+^VGG implemented from scratch in pytorch, useful for understanding how the layers and non-linearities flow together
