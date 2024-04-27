@@ -19,15 +19,17 @@ class SmallGGAutoencoder(nn.Module):
 
     def __init__(self):
         super(SmallGGAutoencoder, self).__init__()
+        self.prelude = nn.Sequential(nn.Conv2d(1, 1, kernel_size=5, padding=2))
         self.encoder = nn.Sequential(
-            nn.Conv2d(1, 1, kernel_size=5, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=4, stride=4),
             nn.Flatten(),
-            nn.Linear(16, 16),
+            nn.Linear(16, 8),
             nn.ReLU(),
         )
         self.decoder = nn.Sequential(
+            nn.Linear(8, 16),
+            nn.ReLU(),
             nn.Linear(16, 32),
             nn.ReLU(),
             nn.Linear(32, 64),
@@ -44,9 +46,24 @@ class SmallGGAutoencoder(nn.Module):
         )
 
     def forward(self, x):
+        x = self.prelude(x)
         x = self.encoder(x)
         x = self.decoder(x)
         return x
+
+    def embed(self, x):
+        """
+        Run just the encoder to get the embedding of the full image
+        """
+        return self.encoder(self.prelude(x))
+
+    def embed_with_prelude(self, x):
+        """
+        Run just the encoder, returning the full image embedding and the activations
+        to be used for the cheap embeddor
+        """
+        prelude = self.prelude(x)
+        return prelude, self.encoder(prelude)
 
     def save_model(self, file_path):
         """
