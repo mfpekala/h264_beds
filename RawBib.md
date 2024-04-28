@@ -12,3 +12,7 @@ Mostly focusing on how to take an overcomplete dictionary and find a sparse repr
 
 Autoencoders chapter
 https://suhangwang.ist.psu.edu/publications/DeepLearningFeatureRepresentation.pdf
+
+Survery on methods for sparse matrix multiplication. suggesting some workloads can see up to 3x performance improvement
+https://arxiv.org/pdf/2002.11273
+^ the sparsity of diffs is (on average) 12%! I.e. 12% nonzero, wow

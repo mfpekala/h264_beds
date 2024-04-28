@@ -344,8 +344,21 @@ class Decoder:
 # encoder = Encoder("basic", "frames/basic/i", "frames/basic/p")
 # encoder.encode()
 
-# decoder = Decoder("basic")
-# decoder.generate_frames()
+decoder = Decoder("basic")
+
+# For estimating matrix sparsity in given representation
+# total = 0.0
+# num = 0
+
+# for frame in decoder.generate_frames():
+#     if frame.kind == "I":
+#         continue
+#     for diff in frame.diffs:
+#         num_nonzero = np.count_nonzero(diff.diff)
+#         total += num_nonzero / 256
+#         num += 1
+
+# print(total / num)
 
 """
 How to store this?

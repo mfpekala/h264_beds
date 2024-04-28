@@ -65,6 +65,12 @@ class SmallGGAutoencoder(nn.Module):
         prelude = self.prelude(x)
         return prelude, self.encoder(prelude)
 
+    def embed_from_prelude(self, prelude):
+        """
+        Embed from the prelude (conv activation) instead of full layer
+        """
+        return self.encoder(prelude)
+
     def save_model(self, file_path):
         """
         Save the model's state dict to a file
