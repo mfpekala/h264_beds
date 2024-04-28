@@ -1,3 +1,8 @@
+"""
+A model defining encoders and decoders for our custom simplified H-264 codec.
+"""
+
+
 import numpy as np
 from dataclasses import dataclass
 from typing import Optional
@@ -100,32 +105,6 @@ def find_reference_block(
                 min_residual = residual
                 min_offset = (x - center[0], y - center[1])
             last_ref = ref
-
-    # # Sanity check the found chunks
-    # do_sanity_check = False
-    # if do_sanity_check:
-    #     y = center[1] + min_offset[1]
-    #     x = center[0] + min_offset[0]
-    #     ref = last_frame[
-    #         y - chunk_size // 2 : y + chunk_size // 2,
-    #         x - chunk_size // 2 : x + chunk_size // 2,
-    #     ]
-    #     plot_diff = ref + min_diff_chunk - truth
-    #     if np.sum(np.abs(plot_diff)) > 0.0:
-    #         fig, axs = plt.subplots(1, 5, figsize=(12, 3))  # Adjust figsize as needed
-    #         axs[0].imshow(truth, cmap="gray", vmin=0.0, vmax=1.0)
-    #         axs[0].set_title("Truth")
-    #         axs[1].imshow(ref, cmap="gray", vmin=0.0, vmax=1.0)
-    #         axs[1].set_title("Reference")
-    #         axs[2].imshow(min_diff_chunk, cmap="gray", vmin=0.0, vmax=1.0)
-    #         axs[2].set_title("Min Diff Chunk")
-    #         axs[3].imshow(ref + min_diff_chunk, cmap="gray", vmin=0.0, vmax=1.0)
-    #         axs[3].set_title("Ref + Min Diff Chunk")
-    #         axs[4].imshow(plot_diff, cmap="gray", vmin=0.0, vmax=1.0)
-    #         axs[4].set_title("Diff")
-    #         plt.tight_layout()
-    #         plt.show()
-    #         raise ValueError("Did not produce good chunk")
 
     return ChunkDiff(min_offset, min_diff_chunk)
 
@@ -341,70 +320,22 @@ class Decoder:
             ix += 1
 
 
-# encoder = Encoder("basic", "frames/basic/i", "frames/basic/p")
-# encoder.encode()
+if __name__ == "__main__":
+    encoder = Encoder("basic", "frames/basic/i", "frames/basic/p")
+    encoder.encode()
 
-decoder = Decoder("basic")
+    decoder = Decoder("basic")
 
-# For estimating matrix sparsity in given representation
-# total = 0.0
-# num = 0
+    # For estimating matrix sparsity in given representation
+    total = 0.0
+    num = 0
 
-# for frame in decoder.generate_frames():
-#     if frame.kind == "I":
-#         continue
-#     for diff in frame.diffs:
-#         num_nonzero = np.count_nonzero(diff.diff)
-#         total += num_nonzero / 256
-#         num += 1
+    for frame in decoder.generate_frames():
+        if frame.kind == "I":
+            continue
+        for diff in frame.diffs:
+            num_nonzero = np.count_nonzero(diff.diff)
+            total += num_nonzero / 256
+            num += 1
 
-# print(total / num)
-
-"""
-How to store this?
-
-
-Step back. What do we need?
-
-1. Some way of encoding.
-Inputs are a path to the i frame folder and p frame folder. Produces a list of frames with the correct type
-Implies we should have a "Frame" class. Type I or P.
-- If I type, is just the whole numpy object of the image
-- If P type, then just the motion vectors and differences for each macroblock
-
-2. Storage!
-Probably best to just create a folder for the video, and store frames as .txt files (basically) labelled
-like frame_0.txt, frame_1.txt...
-Implies that frame should have a efficient serialization to/from .txt file
-
-3. Naive Embedding Computation
-This is basically a way of reading the video where the entire frame is recreated.
-Then the image is chunked and the embedding is computed.
-You must remember the entire image to successfully calculate the next frame.
-
-4. Cheap Embedding Computation
-This is our novel way of computing the embedding.
-For I-frames, this is just chunking and then computing the embedding for each chunk.
-You must remember the embedding for each chunk BUT NOT THE ACTUAL FRAME
-For P-frames, it's a bit foggy rn but it works something like this:
-- Iterate over each chunk.
-- Find the difference vector. This should touch <= 4 chunks from the previous frame.
-- Apply equivariance to estimate (or maybe exactly compute? we'll see) the first layer activation
-of this chunk _AS IF_ it were exactly the previous chunk it points to.
-- Apply difference + linearity to get the actual activation of this chunk
-- Once actual activation is calculated, maxpool + feed-forward to get embedding
-
-5. Compare accuracy
-Compare the embeddings produced by naive/cheap method, and observe how much they diverge (if at all)
-
-6. Compare speed
-Is the cheap embedding computation faster?
-
-7. Compare memory usage
-Does the cheap embedding computation use less memory?
-
-8. Compare other performance considerations
-What if we restrict to one thread?
-
-
-"""
+    print("Average num non-zero:", total / num)

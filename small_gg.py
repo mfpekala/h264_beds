@@ -1,3 +1,7 @@
+"""
+Tools for using the autoencoder that can be imported elsewhere.
+"""
+
 import os
 import cv2
 import numpy as np

@@ -1,3 +1,8 @@
+"""
+Outdated work from an initial approach using dictionary learning instead
+of autoencoders to generate representations.
+"""
+
 import numpy as np
 import os
 from dictlearn import DictionaryLearning
@@ -196,11 +201,12 @@ class Dictionary:
         return reconstructed_image
 
 
-D = Dictionary.from_iframes("frames/i", basis_size=32)
+if __name__ == "__main__":
+    D = Dictionary.from_iframes("frames/i", basis_size=32)
 
-(rep, size) = D.represent_image("frames/i/frame_0.png")
-D.plot_losses()
-img = D.reconstruct_image(rep, size)
-plt.imshow(img, cmap="gray", vmin=0.0, vmax=1.0)
-plt.axis("off")
-plt.show()
+    (rep, size) = D.represent_image("frames/i/frame_0.png")
+    D.plot_losses()
+    img = D.reconstruct_image(rep, size)
+    plt.imshow(img, cmap="gray", vmin=0.0, vmax=1.0)
+    plt.axis("off")
+    plt.show()

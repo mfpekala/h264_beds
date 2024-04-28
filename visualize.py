@@ -1,3 +1,7 @@
+"""
+Code to generate the Autoencoder computation graph
+"""
+
 import torch
 from torchviz import make_dot
 import cv2
@@ -31,10 +35,11 @@ def get_chunks(filepath, chunk_size=16, quantize=64):
     return [torch.from_numpy(chunk).unsqueeze(0) for chunk in chunks]
 
 
-autoencoder = SmallGGAutoencoder.load_model("autoencoders/gen0.pt")
-image_chunks = get_chunks("frames/i/frame_0.png")
+if __name__ == "__main__":
+    autoencoder = SmallGGAutoencoder.load_model("autoencoders/gen0.pt")
+    image_chunks = get_chunks("frames/i/frame_0.png")
 
-output = autoencoder(image_chunks[0])
+    output = autoencoder(image_chunks[0])
 
-dot = make_dot(output, params=dict(autoencoder.named_parameters()))
-dot.render("autoencoder_graph")
+    dot = make_dot(output, params=dict(autoencoder.named_parameters()))
+    dot.render("autoencoder_graph")

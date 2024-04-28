@@ -1,3 +1,7 @@
+"""
+Our various embeddors.
+"""
+
 from codec import Decoder, Chunker
 from small_gg import SmallGGAutoencoder
 import numpy as np
